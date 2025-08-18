@@ -130,8 +130,7 @@ func includePathsForCrontabs(paths []string, username string) []CrontabEntry {
 
 func includePathForCrontabs(path string, username string) []CrontabEntry {
 	var ret []CrontabEntry
-	var paths []string = []string{path}
-
+	paths := []string{path}
 	findFilesInPaths(paths, func(f os.FileInfo, path string) {
 		entries := parseCrontab(path, username)
 		ret = append(ret, entries...)
@@ -160,7 +159,7 @@ func includeRunPartsDirectory(spec string, path string) []CrontabEntry {
 		user, path = split[0], split[1]
 	}
 
-	var paths []string = []string{path}
+	paths := []string{path}
 	findExecutabesInPathes(paths, func(f os.FileInfo, path string) {
 		ret = append(ret, CrontabEntry{Spec: spec, User: user, Command: path})
 	})
