@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# Build docker-gen from scratch
+# Build go-crond from scratch
 FROM golang:1.25-alpine AS go-builder
 
 ARG VERSION=23.12.0
@@ -14,7 +14,14 @@ RUN go mod download -json \
 
 FROM alpine:3.22
 
-# Install docker-gen from build stage
+LABEL org.opencontainers.image.title="go-crond" \
+    org.opencontainers.image.description="A simple cron daemon written in Go" \
+    org.opencontainers.image.url="https://github.com/amazeeio/go-crond" \
+    org.opencontainers.image.source="https://github.com/amazeeio/go-crond.git" \
+    org.opencontainers.image.authors="packaged by amaze.io, original work by WebDevOps Team <hello@webdevops.io>" \
+    org.opencontainers.image.licenses="GPL-2.0"
+
+# Install go-crond from build stage
 COPY --from=go-builder /build/go-crond /usr/local/bin/go-crond
 
 ENTRYPOINT ["/usr/local/bin/go-crond", "--version"]
