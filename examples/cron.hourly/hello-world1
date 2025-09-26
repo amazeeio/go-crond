@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-echo "Hello World! hourly #1" >> /tmp/hourly-1

@@ -1,62 +1,20 @@
-#############################################
-# Build
-#############################################
-FROM --platform=$BUILDPLATFORM golang:1.21-alpine as build
+# syntax=docker/dockerfile:1
+# Build docker-gen from scratch
+FROM golang:1.25-alpine AS go-builder
 
-RUN apk upgrade --no-cache --force
-RUN apk add --update build-base make git
+ARG VERSION=23.12.0
 
-WORKDIR /go/src/github.com/webdevops/go-crond
+ADD https://github.com/webdevops/go-crond.git#${VERSION} /build
 
-# Dependencies
-COPY go.mod go.sum .
-RUN go mod download
+WORKDIR /build
 
-# Compile
-COPY . .
-RUN make test
-ARG TARGETOS TARGETARCH
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} make build
+RUN go mod download -json \
+    && go test ./... \
+    && GOOS=${GOOS} GOARCH=${GOARCH} CGO_ENABLED=0 go build -ldflags "-X main.gitTag=${VERSION} -X main.gitCommit=github.com/amazeeio/go-crond -extldflags '-static' -s -w" -o go-crond .
 
-#############################################
-# Test
-#############################################
-FROM gcr.io/distroless/static as test
-USER 0:0
-WORKDIR /app
-COPY --from=build /go/src/github.com/webdevops/go-crond/go-crond .
-RUN ["./go-crond", "--help"]
+FROM alpine:3.22
 
-#############################################
-# Final alpine
-#############################################
-FROM alpine as final-alpine
-ENV SERVER_BIND=":8080" \
-    SERVER_METRICS="1" \
-    LOG_JSON="1"
-WORKDIR /
-COPY --from=test /app /usr/local/bin
-EXPOSE 8080
-ENTRYPOINT ["go-crond"]
+# Install docker-gen from build stage
+COPY --from=go-builder /build/go-crond /usr/local/bin/go-crond
 
-#############################################
-# FINAL debian
-#############################################
-FROM debian:stable-slim as final-debian
-ENV SERVER_BIND=":8080" \
-    SERVER_METRICS="1" \
-    LOG_JSON="1"
-COPY --from=test /app /usr/local/bin
-EXPOSE 8080
-ENTRYPOINT ["go-crond"]
-
-#############################################
-# FINAL ubuntu
-#############################################
-FROM ubuntu:latest as final-ubuntu
-ENV SERVER_BIND=":8080" \
-    SERVER_METRICS="1" \
-    LOG_JSON="1"
-COPY --from=test /app /usr/local/bin
-EXPOSE 8080
-ENTRYPOINT ["go-crond"]
+ENTRYPOINT ["/usr/local/bin/go-crond", "--version"]
