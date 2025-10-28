@@ -18,7 +18,7 @@ LABEL org.opencontainers.image.title="go-crond" \
     org.opencontainers.image.description="A simple cron daemon written in Go" \
     org.opencontainers.image.url="https://github.com/amazeeio/go-crond" \
     org.opencontainers.image.source="https://github.com/amazeeio/go-crond.git" \
-    org.opencontainers.image.authors="packaged by amaze.io, original work by WebDevOps Team <hello@webdevops.io>" \
+    org.opencontainers.image.authors="packaged by amazee.io, original work by WebDevOps Team <hello@webdevops.io>" \
     org.opencontainers.image.licenses="GPL-2.0"
 
 # Install go-crond from build stage
