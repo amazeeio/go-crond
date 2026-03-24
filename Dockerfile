@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Build go-crond from scratch
-FROM golang:1.25-alpine AS go-builder
+FROM golang:1.26-alpine AS go-builder
 
 ARG VERSION=23.12.0
 
