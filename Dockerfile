@@ -12,7 +12,7 @@ RUN go mod download -json \
     && go test ./... \
     && GOOS=${GOOS} GOARCH=${GOARCH} CGO_ENABLED=0 go build -ldflags "-X main.gitTag=${VERSION} -X main.gitCommit=github.com/amazeeio/go-crond -extldflags '-static' -s -w" -o go-crond .
 
-FROM alpine:3.22
+FROM alpine:3.23
 
 LABEL org.opencontainers.image.title="go-crond" \
     org.opencontainers.image.description="A simple cron daemon written in Go" \
